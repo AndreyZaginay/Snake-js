@@ -25,6 +25,11 @@ export class Terrain {
             }
         }
     }
+
+    clearTexuters() {
+        this.textures = [];
+        this.generate();
+    }
 }
 
 export class TerrainTexture {

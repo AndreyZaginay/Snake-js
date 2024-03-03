@@ -1,5 +1,6 @@
 import { TerrainTexture } from "./terrain.js";
 import { getRandomPoint, checkCollision } from './utils.js'
+import { TerrainColumns, TerrainRows } from "./constants.js";
 
 export class Food extends TerrainTexture {
     constructor(x = null, y = null, fillStyle = 'red') {
@@ -29,6 +30,7 @@ export class Snake {
     speed = 1;
     tailPreviousPos;
     head;
+    lose = false;
 
     constructor() {
         this.body.push(new SnakePart(0, 0));
@@ -40,17 +42,29 @@ export class Snake {
         const lastMovedElementPosition = {x: this.head.x, y: this.head.y};
         const position = this.head.y - this.speed;
         const edge = 0;
-        this.head.y = position * this.head.height < edge ? 24 : position;
+        this.head.y = position < edge ? TerrainColumns - 1 : position;
         this.bodyMove(lastMovedElementPosition);
+        for (let i = 1; i < this.body.length; i++) {
+            if (checkCollision(this.head.x, this.head.y, this.body[i].x, this.body[i].y)) {
+                this.resetSnake();
+                this.lose = true;
+            }
+        }
     }
 
     moveDown() {
         this.setTailPreviousPosition();
         const lastMovedElementPosition = {x: this.head.x, y: this.head.y};
         const position = this.head.y + this.speed;
-        const edge = canvas.height - this.head.height;
-        this.head.y = position * this.head.height > edge ? 0 : position;
+        const edge = TerrainColumns - 1;
+        this.head.y = position > edge ? 0 : position;
         this.bodyMove(lastMovedElementPosition);
+        for (let i = 1; i < this.body.length; i++) {
+            if (checkCollision(this.head.x, this.head.y, this.body[i].x, this.body[i].y)) {
+                this.resetSnake();
+                this.lose = true;
+            }
+        }
     }
 
     moveLeft() {
@@ -58,17 +72,29 @@ export class Snake {
         const lastMovedElementPosition = {x: this.head.x, y: this.head.y};
         const position = this.head.x - this.speed;
         const edge = 0;
-        this.head.x  = position * this.head.width < edge ? 24 : position;
+        this.head.x  = position < edge ? TerrainRows - 1 : position;
         this.bodyMove(lastMovedElementPosition);
+        for (let i = 1; i < this.body.length; i++) {
+            if (checkCollision(this.head.x, this.head.y, this.body[i].x, this.body[i].y)) {
+                this.resetSnake();
+                this.lose = true;
+            }
+        }
     }
 
     moveRight() {
         this.setTailPreviousPosition();
         const lastMovedElementPosition = {x: this.head.x, y: this.head.y};
         const position = this.head.x + this.speed;
-        const edge = canvas.width - this.head.width;
-        this.head.x = position * this.head.width > edge ? 0 : position;
+        const edge = TerrainRows - 1;
+        this.head.x = position > edge ? 0 : position;
         this.bodyMove(lastMovedElementPosition);
+        for (let i = 1; i < this.body.length; i++) {
+            if (checkCollision(this.head.x, this.head.y, this.body[i].x, this.body[i].y)) {
+                this.resetSnake();
+                this.lose = true;
+            }
+        }
     }
 
     setTailPreviousPosition() {
@@ -84,6 +110,11 @@ export class Snake {
             this.body[i].x = newLastPos.x;
             this.body[i].y = newLastPos.y;
         }
+    }
+
+    resetSnake() {
+        this.body = [new SnakePart(0, 0)];
+        this.head = this.body[0];
     }
 
     addBodyPart() {

@@ -4,8 +4,6 @@ import { Food, Snake } from './snake.js';
 import { checkCollision } from './utils.js';
 import { TerrainRows, TerrainColumns } from './constants.js';
 
-const score = document.getElementById('score');
-
 const canvas = new Canvas;
 const renderer = new Renderer(canvas.context);
 
@@ -16,12 +14,16 @@ renderer.translate(terrain);
 const snake = new Snake;
 
 const food = new Food;
-food.generateFood(snake.body);
-console.log(food);
 terrain.addTexture(food);
+food.generateFood(snake.body);
+terrain.addTexture(snake.body[0]);
 
-for(let i = 0; i < snake.body.length; i++) {
-    terrain.addTexture(snake.body[i]);
+const newGame = () => {
+    terrain.clearTexuters();
+    food.generateFood(snake.body);
+    terrain.addTexture(food);
+    terrain.addTexture(snake.body[0]);
+    snake.lose = false;
 }
 
 const directions = {
@@ -33,11 +35,13 @@ const directions = {
 
 addEventListener('keydown', ({ key }) => {
     directions[key]?.();
+    if (snake.lose) {
+        newGame();
+    }
     if (checkCollision(food.x, food.y, snake.head.x, snake.head.y)) {
         snake.addBodyPart();
         terrain.addTexture(snake.body[snake.body.length - 1]);
         food.generateFood(snake.body);
-        score.innerHTML = +score.innerHTML + 1;
     }
 });
 
