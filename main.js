@@ -17,6 +17,7 @@ const snake = new Snake;
 
 const food = new Food;
 food.generateFood(snake.body);
+console.log(food);
 terrain.addTexture(food);
 
 for(let i = 0; i < snake.body.length; i++) {

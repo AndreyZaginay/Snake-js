@@ -31,9 +31,9 @@ export class Renderer {
         const { width, height } = this.context.canvas;
         this.context.clearRect(0, 0, width, height);
         for (const { x, y, width, height, fillStyle } of textures) {
-            this.context.strokeRect(x, y, width, height);
+            this.context.strokeRect(x * width, y * height, width, height);
             this.context.fillStyle = fillStyle;
-            this.context.fillRect(x, y, width, height);
+            this.context.fillRect(x * width, y * height, width, height);
         }
     }
 }
