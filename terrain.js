@@ -1,34 +1,58 @@
 import { TerrainTextureHeight, TerrainTextureWidth } from './constants.js';
+import { getRandomPoint, checkCollision } from './utils.js'
 
 export class Terrain {
-    textures = [];
     width;
     height;
     rows;
     columns;
+    background;
+    snake;
+    food;
 
     constructor(rows, columns) {
         this.width = rows * TerrainTextureWidth;
         this.height = columns * TerrainTextureHeight;
         this.rows = rows;
         this.columns = columns;
+        this.food = new Food;
+        this.background = [];
     }
 
-    addTexture(texture) {
-        this.textures.push(texture);
+
+    addBackgroundTexture(texture) {
+        this.background.push(texture);
     }
 
-    generate() {
+    generateBackround() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.columns; j++) {
-                this.addTexture(new Ground(j, i));
+                this.addBackgroundTexture(new Ground(j, i));
             }
         }
     }
 
-    clearTexuters() {
-        this.textures = [];
-        this.generate();
+    generateFood() {
+        const { x, y } = getRandomPoint();
+        this.food.x = x;
+        this.food.y = y;
+        for (let i = 0; i < this.snake.length; i++){
+            if (checkCollision( this.food.x, this.food.y, this.snake[i].x, this.snake[i].y)) {
+                this.generateFood();
+            }
+        }
+    }
+    
+    checkSnakeBodyCollision() {
+        return this.snake.find(({ x, y }, i) => {
+            if (i === 0) return;
+            return this.snake[0].x === x && this.snake[0].y === y;
+        });
+    }
+
+    checkFoodCollision() {
+        const snakeHead = this.snake[0];
+        return checkCollision(snakeHead.x, snakeHead.y, this.food.x, this.food.y);
     }
 }
 
@@ -48,6 +72,12 @@ export class TerrainTexture {
 
 export class Ground extends TerrainTexture {
     constructor(x, y, fillStyle = 'grey') {
+        super(x, y, fillStyle);
+    }
+}
+
+export class Food extends TerrainTexture {
+    constructor(x = null, y = null, fillStyle = 'red') {
         super(x, y, fillStyle);
     }
 }

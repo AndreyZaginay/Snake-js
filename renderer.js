@@ -27,13 +27,23 @@ export class Renderer {
         this.context.translate(x, y);
     }
 
-    render(textures) {
+    clearCanvas() {
         const { width, height } = this.context.canvas;
         this.context.clearRect(0, 0, width, height);
+    }
+
+    renderTextures(textures) {
         for (const { x, y, width, height, fillStyle } of textures) {
             this.context.strokeRect(x * width, y * height, width, height);
             this.context.fillStyle = fillStyle;
             this.context.fillRect(x * width, y * height, width, height);
         }
     }
+
+    renderTexture({ x, y, height, width, fillStyle }) {
+        this.context.strokeRect(x * width, y * height, width, height);
+        this.context.fillStyle = fillStyle;
+        this.context.fillRect(x * width, y * height, width, height);
+    }
+    
 }
